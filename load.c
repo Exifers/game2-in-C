@@ -46,6 +46,8 @@ struct scene *load_scene(char *filename) {
   size_t line_number = 0;
   while(line) {
     if (strlen(line) != MAP_WIDTH) {
+      printf("All line in the map must be %d characters long, but line %ld is \
+          %ld characters long.\n", MAP_WIDTH, line_number+1, strlen(line));
       free(check_buffer);
       return NULL;
     }
@@ -54,6 +56,9 @@ struct scene *load_scene(char *filename) {
   }
   free(check_buffer);
   if (line_number != MAP_HEIGHT) {
+    printf("There must be %d lines in the map file, but there is %ld lines.\n",
+        MAP_HEIGHT, line_number
+        );
     return NULL;
   }
 

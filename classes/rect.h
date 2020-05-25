@@ -5,6 +5,8 @@
 #include <SDL.h>
 
 #include "classes/vector.h"
+#include "classes/color.h"
+#include "io.h"
 
 struct rect {
   struct vector pos;

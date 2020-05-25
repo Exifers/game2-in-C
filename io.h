@@ -35,5 +35,6 @@ void io_draw_rect(struct rect rect, struct color color);
 // converters
 Uint32 io_convert_color(struct color color);
 SDL_Rect io_convert_rect(struct rect rect);
+struct rect io_convert_rect_back(SDL_Rect sdl_rect);
 
 #endif /* IO_H */

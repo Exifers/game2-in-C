@@ -15,6 +15,7 @@ struct entity *entity_create(
   entity->color = color;
   entity->type = type;
   entity->next = NULL;
+  entity->on_wall = false;
   entity->grounded = false;
   return entity;
 }
@@ -66,14 +67,18 @@ void entity_update(struct entity *this) {
       break;
   }
   if (this->type != WALL) {
-    entity_apply_gravity(this);
-    entity_set_gounded(this);
+    if (globals_singleton()->gravity_enabled) {
+      entity_apply_gravity(this); 
+    }
+    entity_apply_horizontal_friction(this);
+    entity_set_grounded(this);
+    entity_set_on_wall(this);
     entity_handle_collisions(this);
     entity_apply_vel(this);
   }
 }
 
-void entity_set_gounded(struct entity *this) {
+void entity_set_grounded(struct entity *this) {
   struct entity *copy = entity_copy(this);
   entity_step_time(copy);
 
@@ -86,11 +91,40 @@ void entity_set_gounded(struct entity *this) {
     enum collision collision = entity_collides(copy, cur);
     if (collision == TOP) {
       this->grounded = true;
+      entity_free(copy);
       return;
     }
     cur = cur->next;
   }
   this->grounded = false;
+  entity_free(copy);
+}
+
+void entity_set_on_wall(struct entity *this) {
+  struct entity *copy = entity_copy(this);
+  entity_step_time(copy);
+
+  struct entity *cur = globals_singleton()->scene->entity;
+  while (cur) {
+    if (cur == this) {
+      cur = cur->next;
+      continue;
+    }
+    enum collision collision = entity_collides(copy, cur);
+    if (collision == RIGHT
+        || collision == TOP_RIGHT
+        || collision == BOTTOM_RIGHT
+        || collision == LEFT
+        || collision == BOTTOM_LEFT
+        || collision == TOP_LEFT) {
+      this->on_wall = true;
+      entity_free(copy);
+      return;
+    }
+    cur = cur->next;
+  }
+  this->on_wall = false;
+  entity_free(copy);
 }
 
 void entity_update_enemy(struct entity *this) {
@@ -106,6 +140,14 @@ void entity_update_player(struct entity *this) {
   }
   if (io_key_pressed(SDLK_LEFT)) {
     vel = vector_plus(vel, vector_create(-move_factor,0));
+  }
+  if (globals_has_keydown_event(globals_singleton(), SDLK_UP)
+      && globals_singleton()->fly_enabled) {
+    vel = vector_plus(vel, vector_create(0,-move_factor));
+  }
+  if (globals_has_keydown_event(globals_singleton(), SDLK_DOWN)
+      && globals_singleton()->fly_enabled) {
+    vel = vector_plus(vel, vector_create(0,move_factor));
   }
   if (io_key_pressed(SDLK_SPACE) && this->grounded) {
     vel = vector_plus(vel, vector_create(0, -jump_factor));
@@ -126,7 +168,9 @@ struct entity *entity_copy(struct entity *this) {
 }
 
 void entity_step_time(struct entity *this) {
-  entity_apply_gravity(this);
+  if (globals_singleton()->gravity_enabled) {
+    entity_apply_gravity(this); 
+  }
   entity_apply_vel(this);
 }
 
@@ -150,11 +194,19 @@ void entity_apply_vel(struct entity *this) {
       );
 }
 
+void entity_apply_horizontal_friction(struct entity *this) {
+  this->vel = vector_create(
+    this->vel.x * (1 - globals_singleton()->horizontal_friction),
+    this->vel.y
+  );
+}
+
 void entity_draw(struct entity *this) {
   struct rect rect;
   rect.pos = this->pos;
   rect.dims = this->dims;
-  io_draw_rect(rect, this->color);
+  struct color color = this->grounded ? color_create(0,0,0) : color_create(255,0,0);
+  io_draw_rect(rect, color);
 }
 
 enum collision entity_collides(struct entity *this, struct entity *other) {
@@ -197,7 +249,6 @@ void entity_handle_collisions(struct entity *this) {
           );
           break;
         case TOP_LEFT:
-          this->vel = vector_create(0,0);
           break;
         case LEFT:
           this->vel = vector_create(
@@ -206,7 +257,6 @@ void entity_handle_collisions(struct entity *this) {
           ); 
           break;
         case BOTTOM_LEFT:
-          this->vel = vector_create(0,0);
           break;
         case BOTTOM:
           this->vel = vector_create(
@@ -215,7 +265,6 @@ void entity_handle_collisions(struct entity *this) {
           );
           break;
         case BOTTOM_RIGHT:
-          this->vel = vector_create(0,0);
           break;
         case RIGHT:
           this->vel = vector_create(
@@ -224,7 +273,6 @@ void entity_handle_collisions(struct entity *this) {
           ); 
           break;
         case TOP_RIGHT:
-          this->vel = vector_create(0,0);
           break;
         default:
           break;

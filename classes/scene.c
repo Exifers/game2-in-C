@@ -1,4 +1,5 @@
 #include "classes/scene.h"
+#include "globals.h"
 
 struct scene *scene_create(struct color background) {
   struct scene *scene = malloc(sizeof(struct scene));
@@ -19,6 +20,8 @@ void scene_free(struct scene *this) {
 
 void scene_update(struct scene *this) {
   io_fill_screen(this->background);
+
+  globals_update(globals_singleton());
 
   struct entity *cur = this->entity;
   while(cur) {

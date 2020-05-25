@@ -12,7 +12,8 @@ enum entity_type {
 		  WALL,
 		  PLAYER,
 		  ENEMY,
-      AIR
+      AIR,
+      GIZMO
 };
 
 struct entity {
@@ -22,6 +23,7 @@ struct entity {
   struct color color;
   enum entity_type type;
   bool grounded;
+  bool on_wall;
   struct entity *next;
 };
 
@@ -52,6 +54,7 @@ enum collision entity_collides(struct entity *this, struct entity *other);
 struct rect entity_to_rect(struct entity *this);
 void entity_apply_gravity(struct entity *this);
 void entity_apply_vel(struct entity *this);
-void entity_set_gounded(struct entity *this);
-
+void entity_set_grounded(struct entity *this);
+void entity_apply_horizontal_friction(struct entity *this);
+void entity_set_on_wall(struct entity *this);
 #endif /* ENTITY_H */

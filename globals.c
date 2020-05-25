@@ -6,7 +6,17 @@ static struct globals globals_create() {
   globals.quit = false;
   globals.delta_time = 0.1f;
   globals.gravity = vector_create(0,0.1f);
+  globals.show_gizmos = false;
+  globals.gravity_enabled = true;
+  globals.fly_enabled = false;
+  globals.horizontal_friction = 0.01f;
   return globals;
+}
+
+void globals_update(struct globals *this) {
+  if (io_key_pressed(SDLK_g)) {
+    this->show_gizmos = !this->show_gizmos;
+  }
 }
 
 struct globals *globals_singleton() {
@@ -50,6 +60,20 @@ bool globals_has_event(struct globals *this, Uint32 sdl_event) {
   while(event) {
     if (event->event.type == sdl_event) {
       return true;
+    }
+    event = event->next;
+  }
+  return false;
+}
+
+bool globals_has_keydown_event(struct globals *this, SDL_Keycode key_code) {
+  SDL_Scancode scan_code = SDL_GetScancodeFromKey(key_code);
+  struct event *event = this->event;
+  while(event) {
+    if (event->event.type == SDL_KEYDOWN) {
+      if (event->event.key.keysym.scancode == scan_code) {
+        return true;
+      }
     }
     event = event->next;
   }

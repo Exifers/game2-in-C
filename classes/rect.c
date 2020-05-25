@@ -32,11 +32,12 @@ enum collision rect_collides(struct rect *this, struct rect *other) {
   if (!SDL_IntersectRect(&sdl_rect_this, &sdl_rect_other, &result)) {
     return NONE;
   }
+  io_draw_rect(io_convert_rect_back(result), color_create(0,255,0));
 
   // result is the structure filled with intersection of rectangle this with
   // rectangle other. It must have at least one common point with other, we'
   // re looking for that common point here.
-  if (result.x == sdl_rect_other.x && result.x == sdl_rect_other.y) { 
+  if (result.x == sdl_rect_other.x && result.y == sdl_rect_other.y) { 
     if (result.w == result.h) {
       return TOP_LEFT;
     }
@@ -84,8 +85,8 @@ enum collision rect_collides(struct rect *this, struct rect *other) {
     }
   }
 
-  warn(
-    "collision between two rects couldn't have been calculated properly."
-  );
+//  warn(
+//    "collision between two rects couldn't have been calculated properly."
+//  );
   return NONE;
 }

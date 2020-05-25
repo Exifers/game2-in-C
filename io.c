@@ -83,3 +83,10 @@ bool io_key_pressed(SDL_Keycode key) {
   return false;
 }
 
+struct rect io_convert_rect_back(SDL_Rect sdl_rect) {
+  struct rect rect;
+  rect.pos = vector_create(sdl_rect.x, sdl_rect.y);
+  rect.dims = vector_create(sdl_rect.w, sdl_rect.h);
+  return rect;
+}
+
