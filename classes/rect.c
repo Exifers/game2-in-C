@@ -32,7 +32,6 @@ enum collision rect_collides(struct rect *this, struct rect *other) {
   if (!SDL_IntersectRect(&sdl_rect_this, &sdl_rect_other, &result)) {
     return NONE;
   }
-  io_draw_rect(io_convert_rect_back(result), color_create(0,255,0));
 
   // result is the structure filled with intersection of rectangle this with
   // rectangle other. It must have at least one common point with other, we'

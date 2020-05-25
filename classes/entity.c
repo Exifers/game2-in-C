@@ -1,4 +1,5 @@
 #include "classes/entity.h"
+#include "camera.h"
 
 struct entity *entity_create(
 			     struct vector pos,
@@ -206,7 +207,8 @@ void entity_draw(struct entity *this) {
   rect.pos = this->pos;
   rect.dims = this->dims;
   struct color color = this->grounded ? color_create(0,0,0) : color_create(255,0,0);
-  io_draw_rect(rect, color);
+  struct rect view_rect = world_to_view(&globals_singleton()->camera, rect);
+  io_draw_rect(view_rect, color);
 }
 
 enum collision entity_collides(struct entity *this, struct entity *other) {

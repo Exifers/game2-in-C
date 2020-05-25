@@ -8,10 +8,12 @@
 #include "classes/event.h"
 #include "classes/scene.h"
 #include "classes/vector.h"
+#include "camera.h"
 
 struct globals {
   bool quit;
   float delta_time;
+  struct camera camera;
   struct vector gravity;
   struct scene *scene;
   struct event *event;

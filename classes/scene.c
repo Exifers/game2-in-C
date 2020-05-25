@@ -54,3 +54,14 @@ void scene_add_entity(struct scene *this, struct entity *entity) {
 
   cur->next = entity;
 }
+
+struct entity *scene_get_player(struct scene *this) {
+  struct entity *cur = this->entity;
+  while (cur) {
+    if (cur->type == PLAYER) {
+      return cur;
+    }
+    cur = cur->next;
+  }
+  return NULL;
+}

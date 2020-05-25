@@ -38,35 +38,11 @@ struct scene *load_scene(char *filename) {
   fread(content, 1, file_size, file);
   fclose(file);
 
-  // checking format
-  char *check_buffer = malloc(file_size + 1);
-  check_buffer[file_size] = '\0';
-  memcpy(check_buffer, content, file_size);
-  char *line = strtok(check_buffer, "\n");
-  size_t line_number = 0;
-  while(line) {
-    if (strlen(line) != MAP_WIDTH) {
-      printf("All line in the map must be %d characters long, but line %ld is \
-          %ld characters long.\n", MAP_WIDTH, line_number+1, strlen(line));
-      free(check_buffer);
-      return NULL;
-    }
-    line = strtok(NULL, "\n");
-    line_number++;
-  }
-  free(check_buffer);
-  if (line_number != MAP_HEIGHT) {
-    printf("There must be %d lines in the map file, but there is %ld lines.\n",
-        MAP_HEIGHT, line_number
-        );
-    return NULL;
-  }
-
   // building scene object
   struct scene *scene = scene_create(color_create(100,100,100));
 
-  line = strtok(content, "\n");
-  line_number = 0;
+  char *line = strtok(content, "\n");
+  size_t line_number = 0;
   while(line) {
     char *c = line;
     size_t column_number = 0;

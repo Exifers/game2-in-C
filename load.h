@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAP_WIDTH 12
 #define MAP_HEIGHT 8
 
 #include "classes/scene.h"

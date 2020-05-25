@@ -5,6 +5,7 @@ static struct globals globals_create() {
   memset(&globals, '\0', sizeof(struct globals));
   globals.quit = false;
   globals.delta_time = 0.1f;
+  globals.camera = camera_create_with_defaults();
   globals.gravity = vector_create(0,0.1f);
   globals.show_gizmos = false;
   globals.gravity_enabled = true;
@@ -17,6 +18,7 @@ void globals_update(struct globals *this) {
   if (io_key_pressed(SDLK_g)) {
     this->show_gizmos = !this->show_gizmos;
   }
+  camera_follow_player(&this->camera);
 }
 
 struct globals *globals_singleton() {

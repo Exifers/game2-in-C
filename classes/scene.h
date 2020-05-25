@@ -16,5 +16,6 @@ void scene_free(struct scene *this);
 void scene_update(struct scene *this);
 void scene_draw(struct scene *this);
 void scene_add_entity(struct scene *this, struct entity *entity);
+struct entity *scene_get_player(struct scene *this);
 
 #endif /* SCENE_H */
