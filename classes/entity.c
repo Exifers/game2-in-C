@@ -16,7 +16,8 @@ struct entity *entity_create(
   entity->color = color;
   entity->type = type;
   entity->next = NULL;
-  entity->on_wall = false;
+  entity->on_wall_left = false;
+  entity->on_wall_right = false;
   entity->grounded = false;
   return entity;
 }
@@ -85,7 +86,7 @@ void entity_set_grounded(struct entity *this) {
 
   struct entity *cur = globals_singleton()->scene->entity;
   while (cur) {
-    if (cur == this) {
+    if (cur == this || cur->type != WALL) {
       cur = cur->next;
       continue;
     }
@@ -102,30 +103,42 @@ void entity_set_grounded(struct entity *this) {
 }
 
 void entity_set_on_wall(struct entity *this) {
-  struct entity *copy = entity_copy(this);
-  entity_step_time(copy);
+  // copy for testing for on_wall_right
+  struct entity *copy_r = entity_copy(this);
+  copy_r->vel = vector_create(1,0);
+
+  // copy  for testing for on_wall_left
+  struct entity *copy_l = entity_copy(this);
+  copy_l->vel = vector_create(-1,0);
+
+  entity_step_time(copy_r);
+  entity_step_time(copy_l);
+
+  this->on_wall_right = false;
+  this->on_wall_left = false;
 
   struct entity *cur = globals_singleton()->scene->entity;
   while (cur) {
-    if (cur == this) {
+    if (cur == this || cur->type != WALL) {
       cur = cur->next;
       continue;
     }
-    enum collision collision = entity_collides(copy, cur);
-    if (collision == RIGHT
-        || collision == TOP_RIGHT
-        || collision == BOTTOM_RIGHT
-        || collision == LEFT
-        || collision == BOTTOM_LEFT
-        || collision == TOP_LEFT) {
-      this->on_wall = true;
-      entity_free(copy);
-      return;
+    enum collision collision_r = entity_collides(copy_r, cur);
+    enum collision collision_l = entity_collides(copy_l, cur);
+    if (collision_l == RIGHT
+        || collision_l == TOP_RIGHT
+        || collision_l == BOTTOM_RIGHT) {
+      this->on_wall_left = true;
+    }
+    if (collision_r == LEFT
+        || collision_r == TOP_LEFT
+        || collision_r == BOTTOM_LEFT) {
+      this->on_wall_right = true;
     }
     cur = cur->next;
   }
-  this->on_wall = false;
-  entity_free(copy);
+  entity_free(copy_r);
+  entity_free(copy_l);
 }
 
 void entity_update_enemy(struct entity *this) {
@@ -134,26 +147,55 @@ void entity_update_enemy(struct entity *this) {
 
 void entity_update_player(struct entity *this) {
   struct vector vel = this->vel;
-  float move_factor = 0.01;
+  float move_factor = 0.03;
   float jump_factor = 5;
   if (io_key_pressed(SDLK_RIGHT)) {
+    // go right
     vel = vector_plus(vel, vector_create(move_factor, 0));
   }
   if (io_key_pressed(SDLK_LEFT)) {
+    // go left
     vel = vector_plus(vel, vector_create(-move_factor,0));
   }
   if (globals_has_keydown_event(globals_singleton(), SDLK_UP)
       && globals_singleton()->fly_enabled) {
+    // fly up
     vel = vector_plus(vel, vector_create(0,-move_factor));
   }
   if (globals_has_keydown_event(globals_singleton(), SDLK_DOWN)
       && globals_singleton()->fly_enabled) {
+    // fly down
     vel = vector_plus(vel, vector_create(0,move_factor));
   }
   if (io_key_pressed(SDLK_SPACE) && this->grounded) {
+    // jump
     vel = vector_plus(vel, vector_create(0, -jump_factor));
   }
+  if (globals_has_keydown_event(globals_singleton(), SDLK_SPACE)
+      && !this->grounded && (this->on_wall_left || this->on_wall_right)) {
+    // wall jump
+    vel = entity_get_wall_jump_vel(this);
+  }
   this->vel = vel;
+}
+
+struct vector entity_get_wall_jump_vel(struct entity *this) {
+  struct vector wall_jump_vel = vector_create(0,0);
+  float wall_jump_factor_x = 7;
+  float wall_jump_factor_y = -3;
+  if (this->on_wall_left) {
+    wall_jump_vel = vector_plus(
+      wall_jump_vel,
+      vector_create(wall_jump_factor_x, wall_jump_factor_y)
+      );
+  }
+  if (this->on_wall_right) {
+    wall_jump_vel = vector_plus(
+      wall_jump_vel,
+      vector_create(-wall_jump_factor_x, wall_jump_factor_y)
+      );
+  }
+  return wall_jump_vel;
 }
 
 struct entity *entity_copy(struct entity *this) {
@@ -207,6 +249,8 @@ void entity_draw(struct entity *this) {
   rect.pos = this->pos;
   rect.dims = this->dims;
   struct color color = this->grounded ? color_create(0,0,0) : color_create(255,0,0);
+  color = this->on_wall_left ? color_create(0,255,0) : color;
+  color = this->on_wall_right ? color_create(0,0,255) : color;
   struct rect view_rect = world_to_view(&globals_singleton()->camera, rect);
   io_draw_rect(view_rect, color);
 }

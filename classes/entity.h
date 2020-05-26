@@ -23,7 +23,8 @@ struct entity {
   struct color color;
   enum entity_type type;
   bool grounded;
-  bool on_wall;
+  bool on_wall_left;
+  bool on_wall_right;
   struct entity *next;
 };
 
@@ -57,4 +58,6 @@ void entity_apply_vel(struct entity *this);
 void entity_set_grounded(struct entity *this);
 void entity_apply_horizontal_friction(struct entity *this);
 void entity_set_on_wall(struct entity *this);
+struct vector entity_get_wall_jump_vel(struct entity *this);
+
 #endif /* ENTITY_H */
