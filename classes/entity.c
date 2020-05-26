@@ -38,6 +38,10 @@ struct entity *entity_create_with_defaults(
     case ENEMY:
       color = color_create(100,255,200);
       break;
+    case DOOR:
+      color = color_create(255,255,255);
+      dims = vector_create(50,100);
+      break;
     default:
       color = color_create(255,255,255);
       break;
@@ -62,13 +66,14 @@ void entity_update(struct entity *this) {
   switch(this->type) {
     case PLAYER:
       entity_update_player(this);
+      entity_handle_player_encounters_door(this);
       break;
     case ENEMY:
       entity_update_enemy(this);
     default:
       break;
   }
-  if (this->type != WALL) {
+  if (this->type != WALL && this->type != DOOR) {
     if (globals_singleton()->gravity_enabled) {
       entity_apply_gravity(this); 
     }
@@ -100,6 +105,25 @@ void entity_set_grounded(struct entity *this) {
   }
   this->grounded = false;
   entity_free(copy);
+}
+
+void entity_handle_player_encounters_door(struct entity *this) {
+  struct entity *cur = globals_singleton()->scene->entity;
+  while(cur) {
+    if (cur->type != DOOR) {
+      cur = cur->next;
+      continue;
+    }
+    if (entity_collides(this, cur) != NONE) {
+      // scene_free(globals_singleton()->scene);
+      struct scene *next_scene = load_next_scene();
+      if (next_scene) {
+        globals_singleton()->scene = next_scene; 
+      }
+      return;
+    }
+    cur = cur->next;
+  }
 }
 
 void entity_set_on_wall(struct entity *this) {
@@ -248,9 +272,7 @@ void entity_draw(struct entity *this) {
   struct rect rect;
   rect.pos = this->pos;
   rect.dims = this->dims;
-  struct color color = this->grounded ? color_create(0,0,0) : color_create(255,0,0);
-  color = this->on_wall_left ? color_create(0,255,0) : color;
-  color = this->on_wall_right ? color_create(0,0,255) : color;
+  struct color color = this->color;
   struct rect view_rect = world_to_view(&globals_singleton()->camera, rect);
   io_draw_rect(view_rect, color);
 }

@@ -1,4 +1,5 @@
 #include "load.h"
+#include <stdio.h>
 
 struct entity *character_to_entity(char c) {
   enum entity_type type;
@@ -12,6 +13,9 @@ struct entity *character_to_entity(char c) {
   case 'v':
     type = ENEMY;
     break;
+  case 'D':
+    type = DOOR;
+    break;
   default:
     return NULL;
   }
@@ -20,6 +24,21 @@ struct entity *character_to_entity(char c) {
                        vector_create(50,50),
                        type
                        );
+}
+
+struct scene *load_next_scene() {
+  static int last_map_id;
+
+  struct scene *scene = NULL;
+  char filename[20];
+  while (!scene) {
+    sprintf(filename, "maps/%d.map", last_map_id++);
+    scene = load_scene(filename);
+    if (last_map_id > 100) {
+      return NULL;
+    }
+  }
+  return scene;
 }
 
 struct scene *load_scene(char *filename) {

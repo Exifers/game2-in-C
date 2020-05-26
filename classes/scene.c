@@ -19,8 +19,6 @@ void scene_free(struct scene *this) {
 }
 
 void scene_update(struct scene *this) {
-  io_fill_screen(this->background);
-
   globals_update(globals_singleton());
 
   struct entity *cur = this->entity;
@@ -31,6 +29,8 @@ void scene_update(struct scene *this) {
 }
 
 void scene_draw(struct scene *this) {
+  io_fill_screen(this->background);
+
   struct entity *cur = this->entity;
 
   while (cur) {

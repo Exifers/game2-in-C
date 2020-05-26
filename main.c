@@ -10,7 +10,7 @@
 int main(void) {
   io_pre_loop_hook();
 
-  struct scene *scene = load_scene("maps/1.map");
+  struct scene *scene = load_next_scene("maps/1.map");
   if (!scene) {
     return -1;
   }
@@ -19,13 +19,11 @@ int main(void) {
   while(!globals_singleton()->quit) {
     io_begin_loop_hook();
 
-    scene_update(scene);
-    scene_draw(scene);
+    scene_update(globals_singleton()->scene);
+    scene_draw(globals_singleton()->scene);
 
     io_end_loop_hook();
   }
-
-  scene_free(scene);
 
   io_post_loop_hook();
 }

@@ -9,5 +9,6 @@
 #include "classes/scene.h"
 
 struct scene *load_scene(char *filename);
+struct scene *load_next_scene();
 
 #endif /* LOAD_H */

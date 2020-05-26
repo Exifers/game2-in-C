@@ -7,13 +7,16 @@
 #include "classes/color.h"
 #include "io.h"
 #include "classes/rect.h"
+#include "classes/scene.h"
+#include "load.h"
 
 enum entity_type {
 		  WALL,
 		  PLAYER,
 		  ENEMY,
       AIR,
-      GIZMO
+      GIZMO, // unused 
+      DOOR
 };
 
 struct entity {
@@ -59,5 +62,6 @@ void entity_set_grounded(struct entity *this);
 void entity_apply_horizontal_friction(struct entity *this);
 void entity_set_on_wall(struct entity *this);
 struct vector entity_get_wall_jump_vel(struct entity *this);
+void entity_handle_player_encounters_door(struct entity *this);
 
 #endif /* ENTITY_H */
