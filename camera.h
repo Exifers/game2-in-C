@@ -3,7 +3,7 @@
 
 #include "classes/vector.h"
 
-struct camera { 
+struct camera {
   struct vector pos;
   struct vector vel;
 };

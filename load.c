@@ -4,26 +4,26 @@
 struct entity *character_to_entity(char c) {
   enum entity_type type;
   switch (c) {
-  case 'X':
-    type = WALL;
-    break;
-  case 'p':
-    type = PLAYER;
-    break;
-  case 'v':
-    type = ENEMY;
-    break;
-  case 'D':
-    type = DOOR;
-    break;
-  default:
-    return NULL;
+    case 'X':
+      type = WALL;
+      break;
+    case 'p':
+      type = PLAYER;
+      break;
+    case 'v':
+      type = ENEMY;
+      break;
+    case 'D':
+      type = DOOR;
+      break;
+    default:
+      return NULL;
   }
   return entity_create_with_defaults(
-                       vector_create(0,0),
-                       vector_create(50,50),
-                       type
-                       );
+      vector_create(0,0),
+      vector_create(50,50),
+      type
+      );
 }
 
 struct scene *load_next_scene() {

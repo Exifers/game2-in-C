@@ -11,9 +11,9 @@ struct camera camera_create(struct vector pos, struct vector vel) {
 
 struct camera camera_create_with_defaults() {
   return camera_create(
-    vector_create(0,0),
-    vector_create(0,0)
-  );
+      vector_create(0,0),
+      vector_create(0,0)
+      );
 }
 
 struct rect world_to_view(struct camera *this, struct rect rect) {
@@ -24,12 +24,12 @@ struct rect world_to_view(struct camera *this, struct rect rect) {
 
 void camera_update(struct camera *this) {
   this->pos = vector_plus(
-    this->pos,
-    vector_times(
-      this->vel,
-      globals_singleton()->delta_time
-    )
-  );
+      this->pos,
+      vector_times(
+        this->vel,
+        globals_singleton()->delta_time
+        )
+      );
 }
 
 void camera_follow_player(struct camera *this) {
@@ -52,7 +52,7 @@ void camera_follow_player(struct camera *this) {
   else if (player->pos.y < this->pos.y + CAMERA_FOLLOW_PADDING) {
     y = player->pos.y - CAMERA_FOLLOW_PADDING;
   }
-  
+
   if (x < 0) {
     x = 0;
   }
@@ -61,7 +61,7 @@ void camera_follow_player(struct camera *this) {
   }
   // handle x or y > map wifth and set it to map width
   this->pos = vector_create(
-      x, 
+      x,
       y
       );
 }

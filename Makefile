@@ -18,6 +18,10 @@ run: all
 debug: $(obj)
 	$(CC) $^ $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(bin)
 
+remake:
+	make clean
+	make all
+
 clean:
 	$(RM) $(obj) $(bin)
 

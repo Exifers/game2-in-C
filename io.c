@@ -90,3 +90,25 @@ struct rect io_convert_rect_back(SDL_Rect sdl_rect) {
   return rect;
 }
 
+void io_play_sound() {
+
+}
+
+void *io_read_file_content(char *filename, size_t *file_length) {
+  FILE *fptr = fopen(filename, 'r');
+  if (!fptr) {
+    perror("Couldn't open file")
+    return NULL;
+  }
+
+  fseek(fptr, 0, SEEK_END);
+  *file_length = ftell(fptr);
+  fseek(fptr, 0, SEEK_SET);
+  char *content = malloc(file_length);
+  if (!content) {
+    perror("Couldn't allocate memory");
+    return NULL;
+  }
+  fread(content, 1, file_length, fptr);
+  fclose(fptr);
+}

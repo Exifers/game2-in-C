@@ -75,7 +75,7 @@ void entity_update(struct entity *this) {
   }
   if (this->type != WALL && this->type != DOOR) {
     if (globals_singleton()->gravity_enabled) {
-      entity_apply_gravity(this); 
+      entity_apply_gravity(this);
     }
     entity_apply_horizontal_friction(this);
     entity_set_grounded(this);
@@ -118,7 +118,7 @@ void entity_handle_player_encounters_door(struct entity *this) {
       // scene_free(globals_singleton()->scene);
       struct scene *next_scene = load_next_scene();
       if (next_scene) {
-        globals_singleton()->scene = next_scene; 
+        globals_singleton()->scene = next_scene;
       }
       return;
     }
@@ -236,7 +236,7 @@ struct entity *entity_copy(struct entity *this) {
 
 void entity_step_time(struct entity *this) {
   if (globals_singleton()->gravity_enabled) {
-    entity_apply_gravity(this); 
+    entity_apply_gravity(this);
   }
   entity_apply_vel(this);
 }
@@ -253,7 +253,7 @@ void entity_apply_gravity(struct entity *this) {
 
 void entity_apply_vel(struct entity *this) {
   this->pos = vector_plus(
-      this->pos, 
+      this->pos,
       vector_times(
         this->vel,
         globals_singleton()->delta_time
@@ -322,7 +322,7 @@ void entity_handle_collisions(struct entity *this) {
           this->vel = vector_create(
             0,
             this->vel.y
-          ); 
+          );
           break;
         case BOTTOM_LEFT:
           break;
@@ -338,7 +338,7 @@ void entity_handle_collisions(struct entity *this) {
           this->vel = vector_create(
             0,
             this->vel.y
-          ); 
+          );
           break;
         case TOP_RIGHT:
           break;

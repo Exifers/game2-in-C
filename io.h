@@ -32,6 +32,8 @@ void io_post_loop_hook();
 void io_fill_screen(struct color color);
 void io_draw_rect(struct rect rect, struct color color);
 
+void *io_read_file_content(char *filename);
+
 // converters
 Uint32 io_convert_color(struct color color);
 SDL_Rect io_convert_rect(struct rect rect);
